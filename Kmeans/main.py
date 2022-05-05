@@ -453,43 +453,29 @@ def preprocess_data(df):
     # 请使用joblib函数加载自己训练的 scaler、pca 模型，方便在测试时系统对数据进行相同的变换
     # ====================数据预处理、构造特征等========================
     # 例如
-#     df['hours'] = df['timestamp'].dt.hour
-#     df['daylight'] = ((df['hours'] >= 7) & (df['hours'] <= 22)).astype(int)
+    #     df['hours'] = df['timestamp'].dt.hour
+    #     df['daylight'] = ((df['hours'] >= 7) & (df['hours'] <= 22)).astype(int)
     df['timestamp'] = pd.to_datetime(df['timestamp'])
 
-# 将 df 数据按时间序列排序，方便数据展示
+    # 将 df 数据按时间序列排序，方便数据展示
     df = df.sort_values(by='timestamp').reset_index(drop=True)
     df['cpc X cpm'] = df['cpm'] * df['cpc']
     df['cpc / cpm'] = df['cpc'] / df['cpm']
     df['hours'] = df['timestamp'].dt.hour
     df['daylight'] = ((df['hours'] >= 7) & (df['hours'] <= 22)).astype(int)
-    columns = ['cpc','cpm','cpc X cpm','cpc / cpm','hours','daylight']
-    data=df[columns]
-# print(df)
-#     data = df[columns]
-#     # print(data)
-#     scaler = StandardScaler()
-#     data = scaler.fit_transform(data)
-#     data = pd.DataFrame(data, columns=columns)
-
-    #通过 n_components 指定需要降低到的维度
-    n_components =3
+    columns = ['cpc', 'cpm', 'cpc X cpm', 'cpc / cpm', 'hours', 'daylight']
+    data = df[columns]
+    scaler = StandardScaler()
+    data = scaler.fit_transform(data)
+    # 通过 n_components 指定需要降低到的维度
+    n_components = 3
     pca = PCA(n_components=n_components)
     data = pca.fit_transform(data)
-    data = pd.DataFrame(data,columns=['Dimesion' + str(i+1) for i in range(n_components)])
+    data = pd.DataFrame(data, columns=['Dimesion' + str(i + 1) for i in range(n_components)])
     # ========================  模型加载  ===========================
-    # 请确认需要用到的列名，e.g.:columns = ['cpc','cpm']
-#     columns = None
-#     columns = ['Dimension1','Dimension2','Dimension3']
-#     data = df[columns]
-    scaler = StandardScaler()
-    # 例如
-    scaler = joblib.load('./results/scaler.pkl')
-    pca = joblib.load('./results/pca.pkl')
-    data = scaler.transform(data)
+  
 
     return data
-
 def get_distance(data, kmeans, n_features):
     """
     计算样本点与聚类中心的距离
