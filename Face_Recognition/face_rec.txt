@@ -1,0 +1,1 @@
+self.threshold = [0.4,0.6,0.65]
